@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مووا | پیدا کردن فیلم مناسب تو</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="hero">
+        <div class="poster-container">
+            <img src="{% static 'images/apocalypse-now.jpg' %}" alt="Apocalypse Now" class="poster poster--left">
+            <img src="{% static 'images/the-godfather.jpg' %}" alt="The Godfather" class="poster poster--center">
+            <img src="{% static 'images/casablanca.jpg' %}" alt="Casablanca" class="poster poster--right">
+        </div>
+
+        <h1 class="hero-title">
+            بهترین فیلمِ امشب رو
+            با هم پیدا کنیم!
+        </h1>
+
+        <!-- دکمه انتقال به صفحه‌ی پیشنهاد -->
+        <a href="{% url 'start_recommend' %}" class="btn-start">
+            بزن بریم
+        </a>
+    </main>
+</body>
+</html>
+

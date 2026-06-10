@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مووا | دنیای فیلم‌ها و ژورنال‌ها</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+</head>
+<body style="padding: 0 45px;">
+    <!-- Header Section -->
+    <header class="site-header">
+        <div class="container">
+            <a href="{% url 'index' %}" class="logo">مووا</a>
+
+            <nav class="nav">
+                <a href="{% url 'journal_list' %}" class="nav__link">ژورنال‌ها</a>
+                <a href="{% url 'movie_list' %}" class="nav__link">فیلم‌ها</a>
+                <a href="{% url 'start_recommend' %}" class="nav__link">پیشنهاد فیلم</a>
+            </nav>
+
+            <div class="header-search">
+                <form name="search" role="search" action="{% url 'movie_list' %}">
+                    <input type="text"
+                           id="search-input"
+                           name="q"
+                           class="header-search__input"
+                           placeholder="نام فیلم، بازیگر یا کارگردان"
+value="{{ request.GET.q }}"
+                           autocomplete="off" />
+                </form>
+                <div class="header-search__icon" aria-label="جستجو">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#e7cf56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                </div>
+                <div class="search-results" id="search-results"></div>
+            </div>
+
+            <div class="auth">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav__link">پروفایل</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="nav__link">ورود</a>
+                <a href="{% url 'signup' %}" class="nav__link">ثبت‌نام</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <img src="{% static 'images/hero.png' %}" alt="پس‌زمینه سینمایی" class="hero__image" />
+        <div class="hero__overlay"></div>
+        <div class="hero__content">
+            <div class="hero__bottom-row">
+                <h2 class="hero__title">از فیلم‌هایی که دوست داشتی<br />تا آن‌هایی که منتظر تو هستند</h2>
+                <a href="{% url 'recommend' %}" class="hero__btn">شروع کن!</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Movies Section -->
+    <section class="top-movies">
+        <div class="container">
+            <div class="all-movies__grid">
+                {% for movie in movies %}
+                <a href="{% url 'movie_detail' movie.pk %}" class="movie-card">
+                    <div class="movie-card__image">
+                        {% if movie.Poster %}
+                        <img src="{{ movie.Poster.url }}" alt="پوستر {{ movie.Title }}" />
+                        {% endif %}
+                    </div>
+                    <div class="movie-card__info">
+                        <h3 class="movie-card__name">{{ movie.Title }}</h3>
+                        <p class="movie-card__year">{{ movie.year }}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Recommended Banner Section -->
+    <section class="recommend-banner">
+        <div class="recommend-banner__robot">
+            <img src="{% static 'images/robo-banner.png' %}" alt="ربات پیشنهاددهنده" />
+        </div>
+        <div class="recommend-banner__content">
+            <h2 class="recommend-banner__title">دیگه بحث نکنید چی ببینید!</h2>
+            <p class="recommend-banner__subtitle">بذار الگوریتم ما انتخاب کنه.</p>
+            <a href="{% url 'recommend' %}" class="recommend-banner__btn">یک فیلم بهم پیشنهاد بده</a>
+        </div>
+    </section>
+
+    <!-- Journals Section -->
+    <section class="journals">
+        <div class="container">
+            <h2 class="journals__title"><a href="{% url 'journal_list' %}" class="journals__link">ژورنال‌ها ></a></h2>
+            <div class="journals__grid">
+                {% for journal in journals %}
+                <article class="journals-card-featured">
+                    {% if journal.image %}
+                    <img src="{{ journal.image.url }}" alt="{{ journal.title }}" class="journals-card-featured__image" />
+                    {% endif %}
+                    <div class="journals-card-featured__content">
+                        <h5 class="journals-card-featured__title">{{ journal.title }}</h5>
+                        <p class="journals-card-featured__excerpt">{{ journal.excerpt|truncatewords:40 }}</p>
+                        <a href="{% url 'journal_detail' journal.pk %}" class="journals__btn">ادامه مطلب</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Website Recommendation Section -->
+    <section class="recommend-cta">
+        <div class="recommend-cta__content">
+            <h2 class="recommend-cta__title">فیلم امشب رو پیدا کن</h2>
+            <p class="recommend-cta__subtitle">پیشنهاد شخصی‌سازی‌شده<br />در چند ثانیه</p>
+            <a href="{% url 'recommend' %}" class="recommend-cta__btn">بیشتر ببین...</a>
+        </div>
+        <div class="recommend-cta__images">
+            <img src="{% static 'images/poster2.jpg' %}" alt="پوستر فیلم Dune" class="recommend-cta__img" />
+            <img src="{% static 'images/poster1.jpg' %}" alt="پوستر فیلم Poor Things" class="recommend-cta__img" />
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="site-footer__section site-footer__section--watch">
+                <h3 class="site-footer__title">چی ببینیم</h3>
+                <ul class="site-footer__nav">
+                    <li><a href="{% url 'recommend' %}" class="site-footer__link">پیشنهاد فیلم</a></li>
+                    <li><a href="{% url 'movie_list' %}" class="site-footer__link">فیلم‌های برتر</a></li>
+                    <li><a href="{% url 'journal_list' %}" class="site-footer__link">ژورنال‌ها</a></li>
+                </ul>
+            </div>
+
+            <div class="site-footer__section site-footer__section--about">
+                <h3 class="site-footer__title">مووا چیست؟</h3>
+                <p class="site-footer__about">
+                    مووا جایی برای عاشقان سینماست؛ جایی که انتخاب فیلم ساده‌تر،
+                    هوشمندانه‌تر و تماشای آن لذت‌بخش‌تر می‌شود.
+                </p>
+            </div>
+            <div class="site-footer__section site-footer__section--auth site-footer__auth">
+                <div class="site-footer__logo-placeholder">
+                    <img src="{% static 'images/logo.jpg' %}" alt="لوگوی مووا" class="site-footer__logo" />
+                </div>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="site-footer__auth-link">پروفایل</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="site-footer__auth-link">ورود</a>
+                <a href="{% url 'signup' %}" class="site-footer__auth-link">ثبت‌نام</a>
+                {% endif %}
+            </div>
+        </div>
+    </footer>
+    
+</body>
+</html>

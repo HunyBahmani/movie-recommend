@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ movie.Title }} - MOVA</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+</head>
+<body class="movie-detail-page">
+    <!-- Header Section -->
+    <header class="site-header">
+        <div class="container">
+            <a href="{% url 'index' %}" class="logo">مووا</a>
+
+            <nav class="nav">
+                <a href="{% url 'journal_list' %}" class="nav__link">ژورنال‌ها</a>
+                <a href="{% url 'movie_list' %}" class="nav__link">فیلم‌ها</a>
+                <a href="{% url 'start_recommend' %}" class="nav__link">پیشنهاد فیلم</a>
+            </nav>
+
+            <div class="header-search">
+                <form name="search" role="search" action="{% url 'movie_list' %}">
+                    <input type="text"
+                           id="search-input"
+                           name="q"
+                           class="header-search__input"
+                           placeholder="نام فیلم، بازیگر یا کارگردان"
+value="{{ request.GET.q }}"
+                           autocomplete="off" />
+                </form>
+                <div class="header-search__icon" aria-label="جستجو">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#e7cf56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                </div>
+                <div class="search-results" id="search-results"></div>
+            </div>
+
+            <div class="auth">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav__link">پروفایل</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="nav__link">ورود</a>
+                <a href="{% url 'signup' %}" class="nav__link">ثبت‌نام</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages Toast -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+            <button type="button" class="alert-close" aria-label="Close" onclick="this.parentElement.classList.add('hiding'); setTimeout(() => this.parentElement.remove(), 300);">×</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Movie Detail Hero -->
+    <section class="movie-detail">
+        <div class="movie-detail__background-blur">
+            {% if movie.Poster %}
+            <img src="{{ movie.Poster.url }}" alt="" class="movie-detail__bg-blur-image">
+            {% endif %}
+        </div>
+        <div class="movie-detail__overlay"></div>
+        <div class="movie-detail__background">
+            {% if movie.Poster %}
+            <img src="{{ movie.Poster.url }}" alt="{{ movie.Title }}" class="movie-detail__bg-image" />
+            {% endif %}
+        </div>
+
+        <div class="movie-detail__content">
+            <h1 class="movie-detail__title">{{ movie.Title }}</h1>
+
+            <div class="movie-detail__meta">
+                <div class="movie-detail__rating" role="button" tabindex="0" aria-label="Rate movie">
+                    <span class="movie-detail__star">⭐</span>
+                    <span class="movie-detail__score">{{ movie.IMDBscore }}/10</span>
+                </div>
+
+                {% if user.is_authenticated %}
+                <!-- دکمه‌های امتیازدهی فقط برای کاربر لاگین‌شده -->
+                <div class="movie-detail__rating-popup">
+                    {% for i in rating_range %}
+                    <form method="post" action="{% url 'rate_movie' movie.Movie_id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="score" value="{{ i }}">
+                        <button type="submit" class="rating-option {% if moviewatched.theDegreeOfInterestOrDisinterest|floatformat:0|add:0 == i %}is-selected{% endif %}">{{ i }}</button>
+                    </form>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <p class="movie-detail__description">{{ movie.Description }}</p>
+
+            <table class="movie-detail__credits">
+                <tbody>
+                    <tr>
+                        <td>کارگردان</td>
+                        <td>
+                            {{ movie.MovieDirector.FirstName }} {{ movie.MovieDirector.LastName }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>بازیگران</td>
+                        <td>
+                            {% for actor in movie.MovieActor.all %}
+                            {{ actor.FirstName }} {{ actor.LastName }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <script>
+        (function(){
+            var star = document.querySelector('.movie-detail__rating');
+            var popup = document.querySelector('.movie-detail__rating-popup');
+            if(!star || !popup) return;
+
+            function togglePopup(){
+                popup.classList.toggle('is-visible');
+            }
+
+            star.addEventListener('click', function(e){
+                e.stopPropagation();
+                togglePopup();
+            });
+
+            star.addEventListener('keydown', function(e){
+                if(e.key === 'Enter' || e.key === ' '){
+                    e.preventDefault();
+                    togglePopup();
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e){
+                if(popup.classList.contains('is-visible') && !popup.contains(e.target) && !star.contains(e.target)){
+                    popup.classList.remove('is-visible');
+                }
+            });
+
+            // Close on Escape
+            document.addEventListener('keydown', function(e){
+                if(e.key === 'Escape' && popup.classList.contains('is-visible')){
+                    popup.classList.remove('is-visible');
+                }
+            });
+        })();
+
+        // Auto-dismiss toast messages after 4 seconds
+        (function(){
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert){
+                setTimeout(function(){
+                    alert.classList.add('hiding');
+                    setTimeout(function(){
+                        alert.remove();
+                    }, 300);
+                }, 4000);
+            });
+        })();
+    </script>
+
+</body>
+</html>
+

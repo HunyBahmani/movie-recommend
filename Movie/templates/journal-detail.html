@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ journal.title }} - مووا</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+    <script src="{% static 'js/auth.js' %}" defer></script>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="site-header">
+        <div class="container">
+            <a href="{% url 'index' %}" class="logo">مووا</a>
+
+            <nav class="nav">
+                <a href="{% url 'journal_list' %}" class="nav__link">ژورنال‌ها</a>
+                <a href="{% url 'movie_list' %}" class="nav__link">فیلم‌ها</a>
+                <a href="{% url 'start_recommend' %}" class="nav__link">پیشنهاد فیلم</a>
+            </nav>
+
+            <div class="header-search">
+                <form name="search" role="search" action="{% url 'movie_list' %}">
+                    <input type="text"
+                           id="search-input"
+                           name="q"
+                           class="header-search__input"
+                           placeholder="نام فیلم، بازیگر یا کارگردان"
+value="{{ request.GET.q }}"
+                           autocomplete="off" />
+                </form>
+                <div class="header-search__icon" aria-label="جستجو">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#e7cf56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                </div>
+                <div class="search-results" id="search-results"></div>
+            </div>
+
+            <div class="auth">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav__link">پروفایل</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="nav__link">ورود</a>
+                <a href="{% url 'signup' %}" class="nav__link">ثبت‌نام</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Journal Content -->
+    <main class="journal-detail">
+        <div class="container">
+            <article class="journal-article">
+                <header class="journal-article__header">
+                    {% if journal.image %}
+                    <img src="{{ journal.image.url }}" alt="{{ journal.title }}" class="journal-article__logo" />
+                    {% endif %}
+                    <h1 class="journal-article__title">{{ journal.title }}</h1>
+                </header>
+
+                <div class="journal-article__content">
+                    <p>{{ journal.excerpt }}</p>
+                    <div>{{ journal.content|safe }}</div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="site-footer__section site-footer__section--watch">
+                <h3 class="site-footer__title">چی ببینیم</h3>
+                <ul class="site-footer__nav">
+                    <li><a href="{% url 'recommend' %}" class="site-footer__link">پیشنهاد فیلم</a></li>
+                    <li><a href="{% url 'movie_list' %}" class="site-footer__link">فیلم‌های برتر</a></li>
+                    <li><a href="{% url 'journal_list' %}" class="site-footer__link">ژورنال‌ها</a></li>
+                </ul>
+            </div>
+
+            <div class="site-footer__section site-footer__section--about">
+                <h3 class="site-footer__title">مووا چیست؟</h3>
+                <p class="site-footer__about">
+                    مووا جایی برای عاشقان سینماست؛ جایی که انتخاب فیلم ساده‌تر،
+                    هوشمندانه‌تر و تماشای آن لذت‌بخش‌تر می‌شود.
+                </p>
+            </div>
+            <div class="site-footer__section site-footer__section--auth site-footer__auth">
+                <div class="site-footer__logo-placeholder">
+                    <img src="{% static 'images/logo.jpg' %}" alt="لوگوی مووا" class="site-footer__logo" />
+                </div>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="site-footer__auth-link">پروفایل</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="site-footer__auth-link">ورود</a>
+                <a href="{% url 'signup' %}" class="site-footer__auth-link">ثبت‌نام</a>
+                {% endif %}
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

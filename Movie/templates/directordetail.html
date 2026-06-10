@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مووا | جزئیات کارگردان</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+</head>
+<body class="director-detail-page">
+    <!-- Header Section -->
+    <header class="site-header">
+        <div class="container">
+            <a href="{% url 'home' %}" class="logo">مووا</a>
+
+            <nav class="nav">
+                <a href="{% url 'journal_list' %}" class="nav__link">ژورنال‌ها</a>
+                <a href="{% url 'movie_list' %}" class="nav__link">فیلم‌ها</a>
+                <a href="{% url 'actor_list' %}" class="nav__link">بازیگران</a>
+                <a href="{% url 'director_list' %}" class="nav__link">کارگردان‌ها</a>
+            </nav>
+
+            <div class="auth">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav__link">پروفایل</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="nav__link">ورود</a>
+                <a href="{% url 'signup' %}" class="nav__link">ثبت‌نام</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Director Detail Hero -->
+    <section class="director-hero">
+        <div class="container">
+            <div class="director-hero__card">
+                <div class="director-hero__image">
+                    {% if director.Picture %}
+                    <img src="{{ director.Picture.url }}" alt="{{ director.FirstName }} {{ director.LastName }}" class="director-hero__img" />
+                    {% else %}
+                    <img src="{% static 'images/directors/default.jpg' %}" alt="عکس کارگردان" class="director-hero__img" />
+                    {% endif %}
+                </div>
+
+                <div class="director-hero__info">
+                    <h1 class="director-hero__name">{{ director.FirstName }} {{ director.LastName }}</h1>
+
+                    <p class="director-hero__age">
+                        {% if director.Birth_date %}
+                        سن: {{ director.Birth_date|timesince }} |
+                        {% endif %}
+                        جنسیت: {{ director.get_Gender_display }}
+                    </p>
+
+                    <div class="director-hero__famous">
+                        <span class="director-hero__famous-label">معروف‌ترین فیلم:</span>
+                        <span class="director-hero__famous-value">
+                            {% if director.Movies.all %}
+                            {{ director.Movies.first.Title }}
+                            {% else %}
+                            —
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <p class="director-hero__bio">
+                        {{ director.Biography }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
