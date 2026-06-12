@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,16 +14,16 @@
         {% for message in messages %}
         <div class="alert alert-{{ message.tags }}" role="alert">
             {{ message }}
-            <button type="button" class="alert-close" aria-label="Close" onclick="this.parentElement.classList.add('hiding'); setTimeout(() => this.parentElement.remove(), 300);">×</button>
+            <button type="button" class="alert-close" onclick="this.parentElement.classList.add('hiding'); setTimeout(() => this.parentElement.remove(), 300);">×</button>
         </div>
         {% endfor %}
     </div>
     {% endif %}
+
     <div class="profile-page">
         <main class="profile">
             <div class="profile__user">
                 <div class="profile__avatar">
-                    <!-- آواتار پیش‌فرض -->
                     <svg width="150" height="150" viewBox="0 0 198 198" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                               d="M99 0C125.256 0 150.437 10.4303 169.004 28.9964C187.57 47.5625 198 72.7436 198 99C198 153.676 153.676 198 99 198C44.3238 198 0 153.676 0 99C0 44.3238 44.3238 0 99 0ZM108.9 108.9H89.1C64.5907 108.9 43.5484 123.744 34.473 144.934C48.8329 165.07 72.3831 178.2 99 178.2C125.617 178.2 149.167 165.07 163.527 144.932C154.452 123.744 133.409 108.9 108.9 108.9ZM99 29.7C82.5971 29.7 69.3 42.9971 69.3 59.4C69.3 75.8029 82.5971 89.1 99 89.1C115.403 89.1 128.7 75.8029 128.7 59.4C128.7 42.9971 115.403 29.7 99 29.7Z"
@@ -31,30 +31,59 @@
                     </svg>
                 </div>
                 <div class="profile__info">
-                    <h1 class="profile__name">{{ user.username }}</h1>
+                    <h1 class="profile__name">{{ user.get_full_name|default:user.username }}</h1>
+                    <p class="profile__username">@{{ user.username }}</p>
+                    {% if user.email %}
+                        <p class="profile__email">{{ user.email }}</p>
+                    {% endif %}
                 </div>
             </div>
 
+            <!-- فرم ویرایش اطلاعات -->
+            <form method="post" action="{% url 'update_profile' %}" class="profile__form">
+                {% csrf_token %}
+                
+                <div class="profile__form-group">
+                    <label for="id_first_name">نام</label>
+                    <input type="text" name="first_name" id="id_first_name" 
+                           value="{{ user.first_name|default:'' }}" 
+                           class="profile__input" placeholder="نام">
+                </div>
+
+                <div class="profile__form-group">
+                    <label for="id_last_name">نام خانوادگی</label>
+                    <input type="text" name="last_name" id="id_last_name" 
+                           value="{{ user.last_name|default:'' }}" 
+                           class="profile__input" placeholder="نام خانوادگی">
+                </div>
+
+                <div class="profile__form-group">
+                    <label for="id_email">ایمیل</label>
+                    <input type="email" name="email" id="id_email" 
+                           value="{{ user.email|default:'' }}" 
+                           class="profile__input" placeholder="ایمیل">
+                </div>
+
+                <button type="submit" class="profile__save-btn">ذخیره تغییرات</button>
+            </form>
+
             <nav class="profile__menu">
-                <!-- فیلم های پیشنهادی -->
                 <a href="{% url 'start_recommend' %}" class="profile__item">
                     <span>فیلم‌های پیشنهادی</span>
                 </a>
-                <!-- فیلم های مورد علاقه -->
                 <a href="{% url 'movie_watched' %}" class="profile__item">
                     <span>فیلم‌های مورد علاقه</span>
                 </a>
-                <!-- تغییر رمز عبور -->
                 <a href="{% url 'change_password' %}" class="profile__item">
                     <span>تغییر رمز عبور</span>
                 </a>
-                <!-- خروج -->
                 <a href="{% url 'logout' %}" class="profile__item">
                     <span>خروج</span>
                 </a>
             </nav>
         </main>
     </div>
+
     <script>
         // Auto-dismiss toast messages after 4 seconds
         (function(){
