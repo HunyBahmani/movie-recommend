@@ -15,6 +15,7 @@ class HomePage(TemplateView):
         context = super().get_context_data(**kwargs)
         # داده‌های اصلی برای صفحه
         context["movies"] = sample(list(Movie.objects.all()), 10)
+        context["actors"] = Actor.objects.all()[:10]
         context["journals"] = Journal.objects.all()[:10]
         context["movieactor"] = Movie.objects.all()
 

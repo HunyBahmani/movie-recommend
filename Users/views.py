@@ -48,31 +48,3 @@ class ProfileView(LoginRequiredMixin, DetailView):
     login_url = "login"
     def get_object(self):
         return self.request.user
-
-
-
-# اضافه کردن به فایل views.py
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import UpdateView
-from django.urls import reverse_lazy
-from django.contrib import messages
-from .models import User
-
-class UpdateProfileView(LoginRequiredMixin, UpdateView):
-    """ویو برای ویرایش اطلاعات پروفایل کاربر"""
-    
-    model = User
-    fields = ['first_name', 'last_name', 'email']
-    template_name = 'profile.html'  # یا می‌تونی یه قالب جداگانه بسازی
-    success_url = reverse_lazy('profile')
-    
-    def get_object(self, queryset=None):
-        """برگرداندن کاربر فعلی"""
-        return self.request.user
-    
-    def form_valid(self, form):
-        """ذخیره فرم و نمایش پیغام موفقیت"""
-        response = super().form_valid(form)
-        messages.success(self.request, "اطلاعات شما با موفقیت به‌روزرسانی شد!")
-        return response

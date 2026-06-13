@@ -12,65 +12,28 @@
         <div class="signup-wrapper">
             <div class="signup-box">
                 <div class="signup-box__content">
+                    <!-- برگشت به صفحه اصلی -->
                     <a href="{% url 'home' %}" class="back-home">
-                        <svg fill="#771f23" viewBox="0 0 1024 1024" ...>
-                            <path d="M222.927 580.115l301.354 328.512..." />
+                        <!-- آیکن برگشت -->
+                        <svg fill="#771f23" viewBox="0 0 1024 1024"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M222.927 580.115l301.354 328.512c24.354 28.708 20.825 71.724-7.883 96.078s-71.724 20.825-96.078-7.883L19.576 559.963a67.846 67.846 0 01-13.784-20.022 68.03 68.03 0 01-5.977-29.488l.001-.063a68.343 68.343 0 017.265-29.134 68.28 68.28 0 011.384-2.6 67.59 67.59 0 0110.102-13.687L429.966 21.113c25.592-27.611 68.721-29.247 96.331-3.656s29.247 68.721 3.656 96.331L224.088 443.784h730.46c37.647 0 68.166 30.519 68.166 68.166s-30.519 68.166-68.166 68.166H222.927z" />
                         </svg>
                     </a>
 
                     <h1 class="signup-box__title">ثبت‌نام</h1>
 
+                    <!-- فرم ثبت‌نام -->
                     <form method="post" class="signup-box__form">
                         {% csrf_token %}
                         {{ form.non_field_errors }}
 
-                        <!-- نام کاربری -->
+                        {% for field in form %}
+                        {{ field.errors }}
                         <div class="signup-box__row">
-                            {{ form.username }}
+                            {{ field }}
                         </div>
-                        {% if form.username.errors %}
-                            <div class="error">{{ form.username.errors }}</div>
-                        {% endif %}
-
-                        <!-- نام -->
-                        <div class="signup-box__row">
-                            {{ form.first_name }}
-                        </div>
-                        {% if form.first_name.errors %}
-                            <div class="error">{{ form.first_name.errors }}</div>
-                        {% endif %}
-
-                        <!-- نام خانوادگی -->
-                        <div class="signup-box__row">
-                            {{ form.last_name }}
-                        </div>
-                        {% if form.last_name.errors %}
-                            <div class="error">{{ form.last_name.errors }}</div>
-                        {% endif %}
-
-                        <!-- ایمیل -->
-                        <div class="signup-box__row">
-                            {{ form.email }}
-                        </div>
-                        {% if form.email.errors %}
-                            <div class="error">{{ form.email.errors }}</div>
-                        {% endif %}
-
-                        <!-- رمز عبور -->
-                        <div class="signup-box__row">
-                            {{ form.password1 }}
-                        </div>
-                        {% if form.password1.errors %}
-                            <div class="error">{{ form.password1.errors }}</div>
-                        {% endif %}
-
-                        <!-- تأیید رمز عبور -->
-                        <div class="signup-box__row">
-                            {{ form.password2 }}
-                        </div>
-                        {% if form.password2.errors %}
-                            <div class="error">{{ form.password2.errors }}</div>
-                        {% endif %}
+                        {% endfor %}
 
                         <button type="submit" class="signup-box__btn">
                             ثبت‌نام
